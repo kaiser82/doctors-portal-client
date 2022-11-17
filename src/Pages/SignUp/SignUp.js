@@ -1,11 +1,14 @@
 import React, { useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { AuthContext } from '../../contexts/AuthProvider';
+import toast from 'react-hot-toast';
 
 const SignUp = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { createUser, updateUser, googleLogin } = useContext(AuthContext);
+
+    const navigate = useNavigate()
 
     const handleSignUp = (data) => {
         console.log(data);
@@ -13,12 +16,15 @@ const SignUp = () => {
             .then(res => {
                 const user = res.user;
                 console.log(user);
+                toast.success("New user created successfully.")
                 const userInfo = {
                     displayName: data.name
                 }
                 updateUser(userInfo)
-                    .then((() => { }))
-                    .catch(e => console.log(e))
+                    .then(() => {
+                        saveUser(data.name, data.email);
+                    })
+                    .catch(e => console.log(e.message))
             })
             .catch(error => console.log(error));
     }
@@ -30,6 +36,22 @@ const SignUp = () => {
                 console.log(user);
             })
             .catch(e => console.log(e.message))
+    }
+
+    const saveUser = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(user)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log('save user:', data);
+                navigate('/');
+            })
     }
 
     return (

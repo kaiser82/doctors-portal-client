@@ -1,7 +1,10 @@
 import { format } from 'date-fns';
-import React from 'react';
+import React, { useContext } from 'react';
+import toast from 'react-hot-toast';
+import { AuthContext } from '../../../contexts/AuthProvider';
 
-const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
+const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
+    const { user } = useContext(AuthContext)
     const { name, slots } = treatment;
     const date = format(selectedDate, 'PPP');
 
@@ -21,13 +24,27 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
             email,
             phone,
         }
-        /*
-            TODO: send data to the server and 
-            once data is saved then close the modal and display toast success.
-        */
-        console.log(booking)
-        setTreatment(null);
-        alert('success.')
+
+        fetch('http://localhost:5000/bookings', {
+            method: "POST",
+            headers: {
+                'content-type': 'application/json'
+            },
+            body: JSON.stringify(booking)
+        })
+            .then(res => res.json())
+            .then(data => {
+                console.log(data)
+                if (data.acknowledged) {
+                    setTreatment(null);
+                    toast.success('appoint booked.')
+                    refetch();
+                }
+                else {
+                    toast.error(data.message);
+                }
+            })
+
     }
 
     return (
@@ -44,9 +61,9 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
                                 slots.map((slot, index) => <option key={index} value={slot}>{slot}</option>)
                             }
                         </select>
-                        <input type="text" name='name' placeholder="Full Name" className="input input-bordered w-full " />
+                        <input type="text" name='name' defaultValue={user?.displayName} readOnly className="input input-bordered w-full " />
                         <input type="text" name='phone' placeholder="Phone Number" className="input input-bordered w-full " />
-                        <input type="email" name='email' placeholder="Email" className="input input-bordered w-full " />
+                        <input type="email" name='email' defaultValue={user?.email} readOnly className="input input-bordered w-full " />
                         <input type="submit" className='btn w-full' value="Submit" />
                     </form>
                 </div>
