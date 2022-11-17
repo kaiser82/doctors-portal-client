@@ -1,19 +1,29 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from "react-hook-form";
 import { AuthContext } from '../../contexts/AuthProvider';
 import toast from 'react-hot-toast';
+import useToken from '../../hooks/useToken';
 
 const SignUp = () => {
     const { register, handleSubmit, formState: { errors } } = useForm();
     const { createUser, updateUser, googleLogin } = useContext(AuthContext);
+    const [signUpError, setSignUpError] = useState('');
 
-    const navigate = useNavigate()
+    const [createdUserEmail, setCreatedUserEmail] = useState('');
+    const [token] = useToken(createdUserEmail)
+
+    const navigate = useNavigate();
+
+    if (token) {
+        navigate('/');
+    }
 
     const handleSignUp = (data) => {
         console.log(data);
         createUser(data.email, data.password)
             .then(res => {
+                setSignUpError('')
                 const user = res.user;
                 console.log(user);
                 toast.success("New user created successfully.")
@@ -26,7 +36,10 @@ const SignUp = () => {
                     })
                     .catch(e => console.log(e.message))
             })
-            .catch(error => console.log(error));
+            .catch(error => {
+                toast.error(error.message);
+                setSignUpError(error.message)
+            });
     }
 
     const handleGoogleLogin = () => {
@@ -50,7 +63,7 @@ const SignUp = () => {
             .then(res => res.json())
             .then(data => {
                 console.log('save user:', data);
-                navigate('/');
+                setCreatedUserEmail(email);
             })
     }
 
