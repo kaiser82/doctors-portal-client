@@ -2,10 +2,8 @@ import React from 'react';
 
 const Loading = () => {
     return (
-        <div className="h-screen bg-white">
-            <div className="flex justify-center items-center ">
-                <img className="h-16 w-16" src="https://icons8.com/preloaders/preloaders/1488/Iphone-spinner-2.gif" alt="" />
-            </div>
+        <div className='flex flex-col justify-center items-center'>
+            <div className="w-20 h-20 border-4 border-dotted rounded-full animate-spin border-violet-600"></div>
         </div>
     );
 };

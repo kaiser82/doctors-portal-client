@@ -5,7 +5,7 @@ import { AuthContext } from '../../../contexts/AuthProvider';
 
 const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
     const { user } = useContext(AuthContext)
-    const { name, slots } = treatment;
+    const { name, slots, price } = treatment;
     const date = format(selectedDate, 'PPP');
 
     const handleBooking = (e) => {
@@ -23,9 +23,10 @@ const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
             patientName,
             email,
             phone,
+            price
         }
 
-        fetch('http://localhost:5000/bookings', {
+        fetch('https://doctors-portal-server-tawny-xi.vercel.app/bookings', {
             method: "POST",
             headers: {
                 'content-type': 'application/json'

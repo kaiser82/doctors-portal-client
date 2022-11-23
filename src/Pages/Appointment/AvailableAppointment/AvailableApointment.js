@@ -11,12 +11,12 @@ const AvailableAppointment = ({ selectedDate }) => {
 
     const { data: availableAppointments = [], refetch, isLoading } = useQuery({
         queryKey: ['availableAppointments', date],
-        // queryFn: () => fetch('http://localhost:5000/appointmentOptions')
+        // queryFn: () => fetch('https://doctors-portal-server-tawny-xi.vercel.app/appointmentOptions')
         //     .then(res => res.json())
 
         // alternative function
         queryFn: async () => {
-            const res = await fetch(`http://localhost:5000/appointmentOptions?date=${date}`);
+            const res = await fetch(`https://doctors-portal-server-tawny-xi.vercel.app/appointmentOptions?date=${date}`);
             const data = await res.json();
             return data
         }

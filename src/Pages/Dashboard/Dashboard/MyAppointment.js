@@ -1,11 +1,12 @@
 import { useQuery } from '@tanstack/react-query';
 import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import { AuthContext } from '../../../contexts/AuthProvider';
 
 const MyAppointment = () => {
     const { user } = useContext(AuthContext);
 
-    const url = `http://localhost:5000/bookings?email=${user?.email}`;
+    const url = `https://doctors-portal-server-tawny-xi.vercel.app/bookings?email=${user?.email}`;
 
     const { data: bookings = [] } = useQuery({
         queryKey: ['bookings', user?.email],
@@ -33,16 +34,26 @@ const MyAppointment = () => {
                             <th>Treatment Name</th>
                             <th>Appointment Date</th>
                             <th>Appointment Time</th>
+                            <th>Payment</th>
                         </tr>
                     </thead>
                     <tbody>
                         {
-                            bookings.map((booking, index) => <tr key={index} className='hover'>
+                            bookings?.map((booking, index) => <tr key={index} className='hover'>
                                 <th>{index + 1}</th>
                                 <td>{booking.patientName}</td>
                                 <td>{booking.treatmentName}</td>
                                 <td>{booking.appointmentDate}</td>
                                 <td>{booking.slot}</td>
+                                <td>
+                                    {
+                                        booking?.price && !booking.paid ?
+                                            <Link to={`/dashboard/payment/${booking._id}`}>
+                                                <button className='btn btn-sm btn-warning'>Pay now</button>
+                                            </Link> :
+                                            <button className='btn btn-sm btn-secondary' disabled>Paid</button>
+                                    }
+                                </td>
                             </tr>)
                         }
                     </tbody>
